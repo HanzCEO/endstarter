@@ -5,7 +5,6 @@ from datetime import datetime
 from typing import Any
 
 from rich import print as rprint
-from selenium.webdriver.support.ui import WebDriverWait
 
 from endstarter.actions.assertion import (
     AssertElementAction,
@@ -98,20 +97,10 @@ class JobRunner:
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
 
-    def _wait_for_browser_ready(self, driver: Any) -> None:
-        """Wait for browser to be ready for next action."""
-        try:
-            WebDriverWait(driver, 5).until(
-                lambda d: d.execute_script("return document.readyState") == "complete"
-            )
-        except Exception:
-            pass
-
     def _dispatch(self, action: str, step: Step, driver: Any) -> None:
         """Dispatch action to the appropriate handler."""
         if self._verbose:
             rprint(f"  [{styled_action(action)}] ", end="", flush=True)
-        self._wait_for_browser_ready(driver)
         handlers: dict[str, Any] = {
             "use": self._handle_use,
             "navigate": self._handle_navigate,
