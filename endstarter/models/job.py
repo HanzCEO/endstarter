@@ -23,7 +23,7 @@ class Step(BaseModel):
     assert_element: Optional[str] = Field(
         default=None, validation_alias="assert-element"
     )
-    wait: Optional[int] = None
+    wait: Optional[int | str] = None
     screenshot: Optional[str] = None
     execute_script: Optional[str] = Field(
         default=None, validation_alias="execute-script"
