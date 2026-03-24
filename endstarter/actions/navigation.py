@@ -1,8 +1,5 @@
 """Navigation actions for endstarter."""
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-
 from endstarter.actions.base import BaseAction
 
 

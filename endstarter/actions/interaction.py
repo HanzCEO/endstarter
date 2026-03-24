@@ -1,7 +1,8 @@
 """Interaction actions for endstarter."""
 
+from typing import Any
+
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.expected_conditions import element_to_be_clickable
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -17,7 +18,7 @@ class ClickAction(BaseAction):
         element = self._wait_for_element(selector)
         element.click()
 
-    def _wait_for_element(self, selector: str):
+    def _wait_for_element(self, selector: str) -> Any:
         """Wait for element to be clickable."""
         try:
             return WebDriverWait(self.driver, 10).until(

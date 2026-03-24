@@ -1,10 +1,11 @@
 """YAML parser for endstarter."""
 
-import yaml
 from pathlib import Path
 
+import yaml
+
 from endstarter.errors import ParseError
-from endstarter.models.job import Job, Step
+from endstarter.models.job import Job
 
 
 def parse_yaml_file(path: str | Path) -> Job:

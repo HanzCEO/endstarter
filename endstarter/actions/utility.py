@@ -1,7 +1,6 @@
 """Utility actions for endstarter."""
 
 import time
-from selenium.webdriver.remote.webdriver import WebDriver
 
 from endstarter.actions.base import BaseAction
 
@@ -17,10 +16,9 @@ class WaitAction(BaseAction):
 class ScreenshotAction(BaseAction):
     """Take a screenshot of the current page."""
 
-    def execute(self, path: str = "screenshot.png") -> str:
+    def execute(self, path: str = "screenshot.png") -> None:
         """Take a screenshot and save to the given path."""
         self.driver.save_screenshot(path)
-        return path
 
 
 class ExecuteScriptAction(BaseAction):

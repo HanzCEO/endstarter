@@ -2,6 +2,7 @@
 
 import time
 from datetime import datetime
+from typing import Any
 
 from endstarter.actions.assertion import (
     AssertElementAction,
@@ -15,14 +16,12 @@ from endstarter.actions.interaction import (
     TypeAction,
 )
 from endstarter.actions.navigation import (
-    BackAction,
-    ForwardAction,
     NavigateAction,
-    RefreshAction,
 )
 from endstarter.actions.utility import ExecuteScriptAction, ScreenshotAction, WaitAction
 from endstarter.drivers.manager import get_driver, quit_driver
-from endstarter.errors import AssertionError, DriverError, JobError
+from endstarter.errors import AssertionError as EndstarterAssertionError
+from endstarter.errors import JobError
 from endstarter.models.job import Job, Step
 from endstarter.models.result import JobResult, StepResult
 
@@ -37,7 +36,7 @@ class JobRunner:
 
     def run(self) -> JobResult:
         """Execute the job and return results."""
-        result = JobResult(name=self._job.name)
+        result = JobResult(name=self._job.name, passed=True)
         driver = get_driver()
         for step in self._job.jobs:
             step_result = self._execute_step(step, driver)
@@ -54,19 +53,19 @@ class JobRunner:
         quit_driver()
         return result
 
-    def _execute_step(self, step: Step, driver) -> StepResult:
+    def _execute_step(self, step: Step, driver: Any) -> StepResult:
         """Execute a single step and return its result."""
         action_name = step.get_action()
         if not action_name:
             return StepResult(
-                action="unknown", passed=False, duration=0, error="No action in step"
+                action="unknown", passed=False, duration=0.0, error="No action in step"
             )
         start = time.time()
         try:
             self._dispatch(action_name, step, driver)
             duration = time.time() - start
             return StepResult(action=action_name, passed=True, duration=duration)
-        except AssertionError as e:
+        except EndstarterAssertionError as e:
             duration = time.time() - start
             return StepResult(
                 action=action_name, passed=False, duration=duration, error=str(e)
@@ -77,11 +76,11 @@ class JobRunner:
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
 
-    def _dispatch(self, action: str, step: Step, driver) -> None:
+    def _dispatch(self, action: str, step: Step, driver: Any) -> None:
         """Dispatch action to the appropriate handler."""
         if self._verbose:
             print(f"  [{action}] ", end="", flush=True)
-        handlers = {
+        handlers: dict[str, Any] = {
             "use": self._handle_use,
             "navigate": self._handle_navigate,
             "click": self._handle_click,
@@ -102,72 +101,72 @@ class JobRunner:
         if self._verbose:
             print("OK")
 
-    def _handle_use(self, step: Step, driver) -> None:
+    def _handle_use(self, step: Step, driver: Any) -> None:
         """Handle browser selection."""
         if step.use:
             pass
 
-    def _handle_navigate(self, step: Step, driver) -> None:
+    def _handle_navigate(self, step: Step, driver: Any) -> None:
         """Handle navigation."""
         if step.navigate:
             action = NavigateAction(driver)
             action.execute(step.navigate)
 
-    def _handle_click(self, step: Step, driver) -> None:
+    def _handle_click(self, step: Step, driver: Any) -> None:
         """Handle click."""
         if step.click:
             action = ClickAction(driver)
             action.execute(step.click)
 
-    def _handle_type(self, step: Step, driver) -> None:
+    def _handle_type(self, step: Step, driver: Any) -> None:
         """Handle type."""
         if step.type:
             action = TypeAction(driver)
             action.execute(step.type)
 
-    def _handle_submit(self, step: Step, driver) -> None:
+    def _handle_submit(self, step: Step, driver: Any) -> None:
         """Handle submit."""
         if step.submit:
             action = SubmitAction(driver)
             action.execute(step.submit)
 
-    def _handle_hover(self, step: Step, driver) -> None:
+    def _handle_hover(self, step: Step, driver: Any) -> None:
         """Handle hover."""
         if step.hover:
             action = HoverAction(driver)
             action.execute(step.hover)
 
-    def _handle_assert_visible_in_page(self, step: Step, driver) -> None:
+    def _handle_assert_visible_in_page(self, step: Step, driver: Any) -> None:
         """Handle assert visible in page."""
         if step.assert_visible_in_page:
             action = AssertVisibleInPageAction(driver)
             action.execute(step.assert_visible_in_page)
 
-    def _handle_assert_title(self, step: Step, driver) -> None:
+    def _handle_assert_title(self, step: Step, driver: Any) -> None:
         """Handle assert title."""
         if step.assert_title:
             action = AssertTitleAction(driver)
             action.execute(step.assert_title)
 
-    def _handle_assert_element(self, step: Step, driver) -> None:
+    def _handle_assert_element(self, step: Step, driver: Any) -> None:
         """Handle assert element."""
         if step.assert_element:
             action = AssertElementAction(driver)
             action.execute(step.assert_element)
 
-    def _handle_wait(self, step: Step, driver) -> None:
+    def _handle_wait(self, step: Step, driver: Any) -> None:
         """Handle wait."""
         if step.wait:
             action = WaitAction(driver)
             action.execute(step.wait)
 
-    def _handle_screenshot(self, step: Step, driver) -> None:
+    def _handle_screenshot(self, step: Step, driver: Any) -> None:
         """Handle screenshot."""
         if step.screenshot:
             action = ScreenshotAction(driver)
             action.execute(step.screenshot)
 
-    def _handle_execute_script(self, step: Step, driver) -> None:
+    def _handle_execute_script(self, step: Step, driver: Any) -> None:
         """Handle execute script."""
         if step.execute_script:
             action = ExecuteScriptAction(driver)

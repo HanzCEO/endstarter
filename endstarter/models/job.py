@@ -1,46 +1,29 @@
 """Job and step models for endstarter."""
 
-from typing import Annotated, Any, Literal, NotRequired, TypedDict
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
-
-
-class ActionType(BaseModel):
-    """Action type definitions."""
-
-    use: Literal["chrome"] = "chrome"
-    navigate: NotRequired[str]
-    click: NotRequired[str]
-    type: NotRequired[list[str]]
-    submit: NotRequired[str]
-    hover: NotRequired[str]
-    assert_visible_in_page: NotRequired[str]
-    assert_title: NotRequired[str]
-    assert_element: NotRequired[str]
-    wait: NotRequired[int]
-    screenshot: NotRequired[str]
-    execute_script: NotRequired[str]
 
 
 class Step(BaseModel):
     """A single step in a job."""
 
-    use: Annotated[Literal["chrome"], Field(default=None, frozen=True)] = None
-    navigate: str | None = None
-    click: str | None = None
-    type: list[str] | None = None
-    submit: str | None = None
-    hover: str | None = None
-    assert_visible_in_page: str | None = None
-    assert_title: str | None = None
-    assert_element: str | None = None
-    wait: int | None = None
-    screenshot: str | None = None
-    execute_script: str | None = None
+    use: Optional[Literal["chrome"]] = None
+    navigate: Optional[str] = None
+    click: Optional[str] = None
+    type: Optional[list[str]] = None
+    submit: Optional[str] = None
+    hover: Optional[str] = None
+    assert_visible_in_page: Optional[str] = None
+    assert_title: Optional[str] = None
+    assert_element: Optional[str] = None
+    wait: Optional[int] = None
+    screenshot: Optional[str] = None
+    execute_script: Optional[str] = None
 
-    def get_action(self) -> str | None:
+    def get_action(self) -> Optional[str]:
         """Return the action key that is set."""
-        for field, value in self.model_fields.items():
+        for field in self.model_fields:
             if getattr(self, field) is not None:
                 return field
         return None

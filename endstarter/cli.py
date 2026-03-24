@@ -6,7 +6,6 @@ from pathlib import Path
 import click
 
 from endstarter import __version__
-from endstarter.config import is_headless
 from endstarter.errors import EndstarterError, ParseError
 from endstarter.parser.yaml_parser import parse_yaml_file
 from endstarter.runner.job_runner import JobRunner

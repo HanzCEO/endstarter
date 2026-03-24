@@ -1,6 +1,8 @@
 """WebDriver manager for endstarter."""
 
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, cast
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
@@ -12,10 +14,10 @@ from endstarter.errors import DriverError
 if TYPE_CHECKING:
     from selenium.webdriver.remote.webdriver import WebDriver
 
-_driver: "WebDriver | None" = None
+_driver: WebDriver | None = None
 
 
-def get_driver(headless: bool = True) -> "WebDriver":
+def get_driver(headless: bool = True) -> WebDriver:
     """Get or create the WebDriver singleton."""
     global _driver
     if _driver is None:
@@ -23,7 +25,7 @@ def get_driver(headless: bool = True) -> "WebDriver":
     return _driver
 
 
-def _create_chrome_driver(headless: bool = True) -> "WebDriver":
+def _create_chrome_driver(headless: bool = True) -> WebDriver:
     """Create a Chrome WebDriver instance."""
     try:
         options = ChromeOptions()
@@ -35,7 +37,7 @@ def _create_chrome_driver(headless: bool = True) -> "WebDriver":
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
         driver.implicitly_wait(5)
-        return driver
+        return cast(WebDriver, driver)
     except Exception as e:
         raise DriverError(f"Failed to create Chrome driver: {e}") from e
 

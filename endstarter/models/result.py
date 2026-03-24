@@ -1,7 +1,6 @@
 """Result models for endstarter."""
 
 from datetime import datetime
-from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -20,7 +19,7 @@ class JobResult(BaseModel):
     """Result of a job execution."""
 
     name: str
-    passed: bool
+    passed: bool = True
     started_at: datetime = Field(default_factory=datetime.now)
     completed_at: datetime | None = None
     duration: float = 0.0
