@@ -46,10 +46,17 @@ class ClickAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        xpath = f"//*[text()[normalize-space(.)='{text}']]"
+        exact_xpath = f"//*[normalize-space(.)='{text}']"
+        partial_xpath = f"//*[contains(normalize-space(.), '{text}')]"
         try:
             return WebDriverWait(self.driver, 10).until(
-                element_to_be_clickable((By.XPATH, xpath))
+                element_to_be_clickable((By.XPATH, exact_xpath))
+            )
+        except Exception:
+            pass
+        try:
+            return WebDriverWait(self.driver, 10).until(
+                element_to_be_clickable((By.XPATH, partial_xpath))
             )
         except Exception as e:
             raise JobError(f"Element not found by text: {text}") from e
@@ -96,5 +103,10 @@ class HoverAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        xpath = f"//*[text()[normalize-space(.)='{text}']]"
-        return self.driver.find_element(By.XPATH, xpath)
+        exact_xpath = f"//*[normalize-space(.)='{text}']"
+        partial_xpath = f"//*[contains(normalize-space(.), '{text}')]"
+        try:
+            return self.driver.find_element(By.XPATH, exact_xpath)
+        except Exception:
+            pass
+        return self.driver.find_element(By.XPATH, partial_xpath)
