@@ -46,7 +46,7 @@ class ClickAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        xpath = f"//*[text()='{text}' or contains(text(), '{text}')]"
+        xpath = f"//*[contains(normalize-space(.), '{text}')]"
         try:
             return WebDriverWait(self.driver, 10).until(
                 element_to_be_clickable((By.XPATH, xpath))
@@ -96,5 +96,5 @@ class HoverAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        xpath = f"//*[text()='{text}' or contains(text(), '{text}')]"
+        xpath = f"//*[contains(normalize-space(.), '{text}')]"
         return self.driver.find_element(By.XPATH, xpath)
