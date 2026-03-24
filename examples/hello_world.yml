@@ -1,0 +1,6 @@
+name: Hello World
+type: test
+jobs:
+  - use: chrome
+  - navigate: https://ethereumstatus.org/
+  - assert-visible-in-page: Ethereum is up and running.
