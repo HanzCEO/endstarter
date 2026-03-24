@@ -157,14 +157,26 @@ class WindowResizeAction(BaseAction):
 
     def _wait_for_maximize(self) -> None:
         """Wait for window to actually be maximized."""
+        import time
+
         from selenium.webdriver.support.ui import WebDriverWait
 
         def is_maximized(driver: Any) -> bool:
             size = driver.get_window_size()
             return bool(size["width"] >= 1000)
 
+        self.driver.maximize_window()
+        time.sleep(0.5)
         try:
-            WebDriverWait(self.driver, 3).until(is_maximized)
+            WebDriverWait(self.driver, 2).until(is_maximized)
         except Exception:
+            time.sleep(1)
             self.driver.maximize_window()
-            WebDriverWait(self.driver, 3).until(is_maximized)
+            time.sleep(0.5)
+            WebDriverWait(self.driver, 2).until(is_maximized)
+            size = self.driver.get_window_size()
+            if self._developer:
+                print(f"  [DEBUG] Size after set_window_size: {size}")
+            if size["width"] < 1000:
+                self.driver.set_window_size(1920, 1080)
+                time.sleep(2)

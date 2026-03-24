@@ -145,9 +145,14 @@ class JobRunner:
         handler(step, driver)
 
     def _handle_use(self, step: Step, driver: Any) -> None:
-        """Handle browser selection."""
+        """Handle browser selection and wait for window ready."""
         if step.use:
-            pass
+            import time
+
+            from selenium.webdriver.support.ui import WebDriverWait
+
+            WebDriverWait(driver, 10).until(lambda d: d.window_handles)
+            time.sleep(0.5)
 
     def _handle_navigate(self, step: Step, driver: Any) -> None:
         """Handle navigation."""
