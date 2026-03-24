@@ -86,27 +86,38 @@ class JobRunner:
             self._dispatch(action_name, step, driver)
             duration = time.time() - start
             if self._verbose:
-                rprint(f"[{duration:.3f}s]")
+                rprint(f"[{duration:.3f}s {styled_action(action_name)}] {styled_ok()}")
             return StepResult(action=action_name, passed=True, duration=duration)
         except EndstarterAssertionError as e:
             duration = time.time() - start
             if self._verbose:
-                rprint(f"[{duration:.3f}s]")
+                fail = "[bold red]FAIL[/bold red]"
+                rprint(f"[{duration:.3f}s {styled_action(action_name)}] {fail}")
             return StepResult(
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
         except Exception as e:
             duration = time.time() - start
             if self._verbose:
-                rprint(f"[{duration:.3f}s]")
+                fail = "[bold red]FAIL[/bold red]"
+                rprint(f"[{duration:.3f}s {styled_action(action_name)}] {fail}")
+            return StepResult(
+                action=action_name, passed=False, duration=duration, error=str(e)
+            )
+            return StepResult(
+                action=action_name, passed=False, duration=duration, error=str(e)
+            )
+        except Exception as e:
+            duration = time.time() - start
+            if self._verbose:
+                fail = "[bold red]FAIL[/bold red]"
+                rprint(f"[{duration:.3f}s {styled_action(action_name)}] {fail}")
             return StepResult(
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
 
     def _dispatch(self, action: str, step: Step, driver: Any) -> None:
         """Dispatch action to the appropriate handler."""
-        if self._verbose:
-            rprint(f"  [{styled_action(action)}] ", end="", flush=True)
         handlers: dict[str, Any] = {
             "use": self._handle_use,
             "navigate": self._handle_navigate,
@@ -132,8 +143,6 @@ class JobRunner:
         if not handler:
             raise JobError(f"Unknown action: {action}")
         handler(step, driver)
-        if self._verbose:
-            rprint(styled_ok())
 
     def _handle_use(self, step: Step, driver: Any) -> None:
         """Handle browser selection."""
