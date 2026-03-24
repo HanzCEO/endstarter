@@ -95,9 +95,8 @@ class ClickAction(BaseAction):
                     href = element.get_attribute("href") or ""
                     tag = element.tag_name
                     txt = element.text[:50]
-                    print(
-                        f"  [DEBUG] Found after wait: <{tag}> text='{txt}...' href='{href}'"
-                    )
+                    print(f"  [DEBUG] Found after wait: <{tag}>")
+                    print(f"  [DEBUG] text='{txt}...' href='{href}'")
                 return element
         raise JobError(f"Element not found by text: {text}")
 
@@ -142,13 +141,23 @@ class HoverAction(BaseAction):
         ActionChains(self.driver).move_to_element(element).perform()
 
     def _find_by_text(self, text: str) -> Any:
-        """Find element by text content."""
+        """Find element by text content using fast parallel search."""
         anchor_xpath = f"//a[contains(normalize-space(.), '{text}')]"
         button_xpath = f"//button[contains(normalize-space(.), '{text}')]"
         generic_xpath = f"//*[contains(normalize-space(.), '{text}')]"
-        for xpath in [anchor_xpath, button_xpath, generic_xpath]:
-            try:
-                return self.driver.find_element(By.XPATH, xpath)
-            except Exception:
-                pass
+        xpaths = [anchor_xpath, button_xpath, generic_xpath]
+        for xpath in xpaths:
+            elements = self.driver.find_elements(By.XPATH, xpath)
+            if elements:
+                return elements[0]
+        try:
+            WebDriverWait(self.driver, 5).until(
+                lambda d: d.execute_script("return document.readyState") == "complete"
+            )
+        except Exception:
+            pass
+        for xpath in xpaths:
+            elements = self.driver.find_elements(By.XPATH, xpath)
+            if elements:
+                return elements[0]
         raise JobError(f"Element not found by text: {text}")
