@@ -11,3 +11,6 @@ jobs:
   - drag_and_drop:
       source: "#source"
       target: "#target"
+  - resize: maximize
+  - resize: [1280, 720]
+  - resize: fullscreen
