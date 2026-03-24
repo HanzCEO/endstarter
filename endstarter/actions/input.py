@@ -1,5 +1,7 @@
 """Input actions for endstarter."""
 
+from typing import Any
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -119,6 +121,11 @@ class DragAndDropAction(BaseAction):
 class WindowResizeAction(BaseAction):
     """Resize browser window."""
 
+    def __init__(self, driver: Any, developer: bool = False) -> None:
+        """Initialize with driver and optional developer flag."""
+        super().__init__(driver)
+        self._developer = developer
+
     def execute(self, value: str | list[int]) -> None:
         """Resize window.
 
@@ -127,12 +134,13 @@ class WindowResizeAction(BaseAction):
         """
         from selenium.webdriver.support.ui import WebDriverWait
 
-        WebDriverWait(self.driver, 2).until(lambda d: d.window_handles)
+        WebDriverWait(self.driver, 5).until(lambda d: d.window_handles)
         if isinstance(value, str):
             if value == "minimize":
                 self.driver.minimize_window()
             elif value == "maximize":
                 self.driver.maximize_window()
+                self._wait_for_maximize()
             elif value == "fullscreen":
                 self.driver.fullscreen_window()
             else:
@@ -143,3 +151,20 @@ class WindowResizeAction(BaseAction):
                 msg = "Resize coords must be [width, height]"
                 raise ValueError(msg)
             self.driver.set_window_size(value[0], value[1])
+        if self._developer:
+            size = self.driver.get_window_size()
+            print(f"  [DEBUG] Window size: {size}")
+
+    def _wait_for_maximize(self) -> None:
+        """Wait for window to actually be maximized."""
+        from selenium.webdriver.support.ui import WebDriverWait
+
+        def is_maximized(driver: Any) -> bool:
+            size = driver.get_window_size()
+            return bool(size["width"] >= 1000)
+
+        try:
+            WebDriverWait(self.driver, 3).until(is_maximized)
+        except Exception:
+            self.driver.maximize_window()
+            WebDriverWait(self.driver, 3).until(is_maximized)

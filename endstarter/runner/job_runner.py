@@ -254,5 +254,5 @@ class JobRunner:
     def _handle_resize(self, step: Step, driver: Any) -> None:
         """Handle resize."""
         if step.resize is not None:
-            action = WindowResizeAction(driver)
+            action = WindowResizeAction(driver, developer=self._developer)
             action.execute(step.resize)
