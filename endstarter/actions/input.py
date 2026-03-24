@@ -59,3 +59,20 @@ class MouseClickAction(BaseAction):
         x, y = coords
         ActionChains(self.driver).move_by_offset(x, y).click().perform()
         ActionChains(self.driver).move_by_offset(-x, -y).perform()
+
+
+class RightClickAction(BaseAction):
+    """Right-click at screen coordinates."""
+
+    def execute(self, coords: list[int]) -> None:
+        """Right-click at coordinates.
+
+        Args:
+            coords: [x, y] screen coordinates
+        """
+        if len(coords) != 2:
+            msg = "Coords must be [x, y]"
+            raise ValueError(msg)
+        x, y = coords
+        ActionChains(self.driver).move_by_offset(x, y).context_click().perform()
+        ActionChains(self.driver).move_by_offset(-x, -y).perform()
