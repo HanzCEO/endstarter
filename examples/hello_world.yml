@@ -2,5 +2,6 @@ name: Hello World
 type: test
 jobs:
   - use: chrome
+  - resize: maximize
   - navigate: https://ethereumstatus.org/
   - assert-visible-in-page: Ethereum is up and running.
