@@ -4,9 +4,11 @@ import sys
 from pathlib import Path
 
 import click
+from rich import print as rprint
 
 from endstarter import __version__
 from endstarter.errors import EndstarterError, ParseError
+from endstarter.output import styled_error, styled_fail, styled_pass
 from endstarter.parser.yaml_parser import parse_yaml_file
 from endstarter.runner.job_runner import JobRunner
 
@@ -25,17 +27,17 @@ def cli(job_file: Path, verbose: bool, headed: bool) -> None:
         if verbose:
             print()
         if result.passed:
-            click.echo(f"PASS: {result.name} ({result.duration:.2f}s)")
+            rprint(styled_pass(f"{result.name} ({result.duration:.2f}s)"))
             sys.exit(0)
         else:
-            click.echo(f"FAIL: {result.name} - {result.error}")
+            rprint(styled_fail(f"{result.name} - {result.error}"))
             sys.exit(1)
     except ParseError as e:
-        click.echo(f"Parse error: {e}", err=True)
+        rprint(styled_error(f"Parse error: {e}"), file=sys.stderr)
         sys.exit(3)
     except EndstarterError as e:
-        click.echo(f"Error: {e}", err=True)
+        rprint(styled_error(f"{e}"), file=sys.stderr)
         sys.exit(2)
     except Exception as e:
-        click.echo(f"Unexpected error: {e}", err=True)
+        rprint(styled_error(f"Unexpected error: {e}"), file=sys.stderr)
         sys.exit(2)

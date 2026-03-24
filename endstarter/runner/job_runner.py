@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 from typing import Any
 
+from rich import print as rprint
+
 from endstarter.actions.assertion import (
     AssertElementAction,
     AssertTitleAction,
@@ -24,6 +26,7 @@ from endstarter.errors import AssertionError as EndstarterAssertionError
 from endstarter.errors import JobError
 from endstarter.models.job import Job, Step
 from endstarter.models.result import JobResult, StepResult
+from endstarter.output import styled_action, styled_ok
 
 
 class JobRunner:
@@ -82,7 +85,7 @@ class JobRunner:
     def _dispatch(self, action: str, step: Step, driver: Any) -> None:
         """Dispatch action to the appropriate handler."""
         if self._verbose:
-            print(f"  [{action}] ", end="", flush=True)
+            rprint(f"  [{styled_action(action)}] ", end="", flush=True)
         handlers: dict[str, Any] = {
             "use": self._handle_use,
             "navigate": self._handle_navigate,
@@ -102,7 +105,7 @@ class JobRunner:
             raise JobError(f"Unknown action: {action}")
         handler(step, driver)
         if self._verbose:
-            print("OK")
+            rprint(styled_ok())
 
     def _handle_use(self, step: Step, driver: Any) -> None:
         """Handle browser selection."""
