@@ -104,12 +104,14 @@ class ClickAction(BaseAction):
 class TypeAction(BaseAction):
     """Type text into an input element."""
 
-    def execute(self, args: list[str]) -> None:
+    def execute(self, args: str | list[str]) -> None:
         """Type text into elements.
 
         Args:
-            args: [selector, text] pair
+            args: [selector, text] pair or "selector,text" string
         """
+        if isinstance(args, str):
+            args = args.split(",", 1)
         if len(args) != 2:
             raise JobError("type requires [selector, text]")
         selector, text = args

@@ -1,6 +1,6 @@
 """Job and step models for endstarter."""
 
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,7 @@ class Step(BaseModel):
     use: Optional[Literal["chrome"]] = None
     navigate: Optional[str] = None
     click: Optional[str] = None
-    type: Optional[list[str]] = None
+    type: Optional[Any] = None
     submit: Optional[str] = None
     hover: Optional[str] = None
     assert_visible_in_page: Optional[str] = Field(
@@ -29,21 +29,15 @@ class Step(BaseModel):
         default=None, validation_alias="execute-script"
     )
     press_key: Optional[str] = Field(default=None, validation_alias="press-key")
-    key_combo: Optional[list[str]] = Field(default=None, validation_alias="key-combo")
-    mouse_click: Optional[list[int]] = Field(
-        default=None, validation_alias="mouse-click"
-    )
-    right_click: Optional[list[int]] = Field(
-        default=None, validation_alias="right-click"
-    )
-    mouse_move: Optional[list[int]] = Field(default=None, validation_alias="mouse-move")
+    key_combo: Optional[Any] = Field(default=None, validation_alias="key-combo")
+    mouse_click: Optional[Any] = Field(default=None, validation_alias="mouse-click")
+    right_click: Optional[Any] = Field(default=None, validation_alias="right-click")
+    mouse_move: Optional[Any] = Field(default=None, validation_alias="mouse-move")
     drag_and_drop: Optional[dict[str, str]] = Field(
         default=None, validation_alias="drag-and-drop"
     )
     resize: Optional[str | list[int]] = None
-    pick_file: Optional[list[str | float]] = Field(
-        default=None, validation_alias="pick-file"
-    )
+    pick_file: Optional[Any] = Field(default=None, validation_alias="pick-file")
 
     def get_action(self) -> Optional[str]:
         """Return the action key that is set."""

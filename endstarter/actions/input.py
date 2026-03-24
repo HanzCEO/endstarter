@@ -27,12 +27,14 @@ class KeyPressAction(BaseAction):
 class KeyComboAction(BaseAction):
     """Press a key combination."""
 
-    def execute(self, keys: list[str]) -> None:
+    def execute(self, keys: str | list[str]) -> None:
         """Press a key combination.
 
         Args:
-            keys: List of key names (e.g., ["control", "c"] for Ctrl+C)
+            keys: List of key names (e.g., ["control", "c"]) or single key string
         """
+        if isinstance(keys, str):
+            keys = [keys]
         key_constants: list[str] = []
         for key in keys:
             key_constant = getattr(Keys, key.upper(), None)
@@ -51,12 +53,14 @@ class KeyComboAction(BaseAction):
 class MouseClickAction(BaseAction):
     """Click at screen coordinates."""
 
-    def execute(self, coords: list[int]) -> None:
+    def execute(self, coords: int | list[int]) -> None:
         """Click at coordinates.
 
         Args:
-            coords: [x, y] screen coordinates
+            coords: [x, y] screen coordinates or single integer
         """
+        if isinstance(coords, int):
+            coords = [coords]
         if len(coords) != 2:
             msg = "Coords must be [x, y]"
             raise ValueError(msg)
@@ -68,12 +72,14 @@ class MouseClickAction(BaseAction):
 class RightClickAction(BaseAction):
     """Right-click at screen coordinates."""
 
-    def execute(self, coords: list[int]) -> None:
+    def execute(self, coords: int | list[int]) -> None:
         """Right-click at coordinates.
 
         Args:
-            coords: [x, y] screen coordinates
+            coords: [x, y] screen coordinates or single integer
         """
+        if isinstance(coords, int):
+            coords = [coords]
         if len(coords) != 2:
             msg = "Coords must be [x, y]"
             raise ValueError(msg)
@@ -85,12 +91,14 @@ class RightClickAction(BaseAction):
 class MouseMoveAction(BaseAction):
     """Move mouse to screen coordinates."""
 
-    def execute(self, coords: list[int]) -> None:
-        """Move mouse to coordinates.
+    def execute(self, coords: int | list[int]) -> None:
+        """Move mouse to screen coordinates.
 
         Args:
-            coords: [x, y] screen coordinates
+            coords: [x, y] screen coordinates or single integer
         """
+        if isinstance(coords, int):
+            coords = [coords]
         if len(coords) != 2:
             msg = "Coords must be [x, y]"
             raise ValueError(msg)
@@ -185,18 +193,22 @@ class WindowResizeAction(BaseAction):
 class PickFileAction(BaseAction):
     """Handle native OS file picker using pyautogui."""
 
-    def execute(self, args: list[str | float]) -> None:
+    def execute(self, args: str | list[str | float]) -> None:
         """Pick file from native OS dialog.
 
         Args:
-            args: [file_path] or [file_path, delay_seconds]
+            args: file_path or [file_path, delay_seconds]
         """
         import time as time_module
 
         import pyautogui  # type: ignore[import-untyped]
 
-        file_path = str(args[0])
-        delay = float(args[1]) if len(args) > 1 else 0.5
+        if isinstance(args, str):
+            file_path = args
+            delay = 0.5
+        else:
+            file_path = str(args[0])
+            delay = float(args[1]) if len(args) > 1 else 0.5
         time_module.sleep(delay)
         pyautogui.write(file_path)
         pyautogui.press("enter")
