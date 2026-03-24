@@ -9,6 +9,7 @@ from endstarter.actions.input import (
     MouseClickAction,
     MouseMoveAction,
     RightClickAction,
+    WindowResizeAction,
 )
 
 
@@ -78,3 +79,55 @@ def test_drag_and_drop_action_missing_keys():
         action.execute({"source": "#elem"})
     except ValueError as e:
         assert "drag_and_drop requires" in str(e)
+
+
+def test_window_resize_action_minimize():
+    """Test WindowResizeAction minimize."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    action.execute("minimize")
+    driver.minimize_window.assert_called_once()
+
+
+def test_window_resize_action_maximize():
+    """Test WindowResizeAction maximize."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    action.execute("maximize")
+    driver.maximize_window.assert_called_once()
+
+
+def test_window_resize_action_fullscreen():
+    """Test WindowResizeAction fullscreen."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    action.execute("fullscreen")
+    driver.fullscreen_window.assert_called_once()
+
+
+def test_window_resize_action_size():
+    """Test WindowResizeAction set size."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    action.execute([1280, 720])
+    driver.set_window_size.assert_called_once_with(1280, 720)
+
+
+def test_window_resize_action_invalid_string():
+    """Test WindowResizeAction raises on invalid string."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    try:
+        action.execute("invalid")
+    except ValueError as e:
+        assert "Unknown resize value: invalid" in str(e)
+
+
+def test_window_resize_action_invalid_coords():
+    """Test WindowResizeAction raises on invalid coords."""
+    driver = MagicMock()
+    action = WindowResizeAction(driver)
+    try:
+        action.execute([1280])
+    except ValueError as e:
+        assert "Resize coords must be [width, height]" in str(e)
