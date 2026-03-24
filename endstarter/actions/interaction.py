@@ -11,13 +11,17 @@ from endstarter.errors import JobError
 
 
 def _is_css_selector(value: str) -> bool:
-    """Detect if value is a CSS selector vs text content."""
-    css_chars = {"#", ".", "[", "]", ">", "+", "~", "*", " "}
-    return (
-        any(c in value for c in css_chars)
-        or value.startswith(("#", "."))
-        or value.startswith("//")
-    )
+    """Detect if value is a CSS selector vs text content.
+
+    CSS selectors start with # . [ or contain CSS metacharacters.
+    Plain text (especially with spaces) is treated as text content.
+    """
+    if value.startswith(("#", ".", "[", "//")):
+        return True
+    css_chars = {"#", ".", "[", "]", ">", "+", "~", "*"}
+    if any(c in value for c in css_chars):
+        return True
+    return False
 
 
 class ClickAction(BaseAction):
