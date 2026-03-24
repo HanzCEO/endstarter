@@ -8,22 +8,30 @@ from pydantic import BaseModel, Field
 class Step(BaseModel):
     """A single step in a job."""
 
+    model_config = {"populate_by_name": True}
+
     use: Optional[Literal["chrome"]] = None
     navigate: Optional[str] = None
     click: Optional[str] = None
     type: Optional[list[str]] = None
     submit: Optional[str] = None
     hover: Optional[str] = None
-    assert_visible_in_page: Optional[str] = None
-    assert_title: Optional[str] = None
-    assert_element: Optional[str] = None
+    assert_visible_in_page: Optional[str] = Field(
+        default=None, validation_alias="assert-visible-in-page"
+    )
+    assert_title: Optional[str] = Field(default=None, validation_alias="assert-title")
+    assert_element: Optional[str] = Field(
+        default=None, validation_alias="assert-element"
+    )
     wait: Optional[int] = None
     screenshot: Optional[str] = None
-    execute_script: Optional[str] = None
+    execute_script: Optional[str] = Field(
+        default=None, validation_alias="execute-script"
+    )
 
     def get_action(self) -> Optional[str]:
         """Return the action key that is set."""
-        for field in self.model_fields:
+        for field in type(self).model_fields:
             if getattr(self, field) is not None:
                 return field
         return None
