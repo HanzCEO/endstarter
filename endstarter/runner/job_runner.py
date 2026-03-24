@@ -85,14 +85,20 @@ class JobRunner:
         try:
             self._dispatch(action_name, step, driver)
             duration = time.time() - start
+            if self._verbose:
+                rprint(f"[{duration:.3f}s]")
             return StepResult(action=action_name, passed=True, duration=duration)
         except EndstarterAssertionError as e:
             duration = time.time() - start
+            if self._verbose:
+                rprint(f"[{duration:.3f}s]")
             return StepResult(
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
         except Exception as e:
             duration = time.time() - start
+            if self._verbose:
+                rprint(f"[{duration:.3f}s]")
             return StepResult(
                 action=action_name, passed=False, duration=duration, error=str(e)
             )
