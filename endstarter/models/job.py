@@ -41,6 +41,9 @@ class Step(BaseModel):
         default=None, validation_alias="drag-and-drop"
     )
     resize: Optional[str | list[int]] = None
+    pick_file: Optional[list[str | float]] = Field(
+        default=None, validation_alias="pick-file"
+    )
 
     def get_action(self) -> Optional[str]:
         """Return the action key that is set."""
