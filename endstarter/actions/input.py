@@ -93,3 +93,22 @@ class MouseMoveAction(BaseAction):
         x, y = coords
         ActionChains(self.driver).move_by_offset(x, y).perform()
         ActionChains(self.driver).move_by_offset(-x, -y).perform()
+
+
+class DragAndDropAction(BaseAction):
+    """Drag element and drop at target."""
+
+    def execute(self, args: dict[str, str]) -> None:
+        """Drag source element to target element.
+
+        Args:
+            args: {"source": "selector", "target": "selector"}
+        """
+        if "source" not in args or "target" not in args:
+            msg = "drag_and_drop requires {source: selector, target: selector}"
+            raise ValueError(msg)
+        from selenium.webdriver.common.by import By
+
+        source = self.driver.find_element(By.CSS_SELECTOR, args["source"])
+        target = self.driver.find_element(By.CSS_SELECTOR, args["target"])
+        ActionChains(self.driver).drag_and_drop(source, target).perform()
