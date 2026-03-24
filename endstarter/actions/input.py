@@ -134,7 +134,7 @@ class WindowResizeAction(BaseAction):
         """
         from selenium.webdriver.support.ui import WebDriverWait
 
-        WebDriverWait(self.driver, 5).until(lambda d: d.window_handles)
+        WebDriverWait(self.driver, 3).until(lambda d: d.window_handles)
         if isinstance(value, str):
             if value == "minimize":
                 self.driver.minimize_window()
@@ -168,15 +168,15 @@ class WindowResizeAction(BaseAction):
         self.driver.maximize_window()
         time.sleep(0.5)
         try:
-            WebDriverWait(self.driver, 2).until(is_maximized)
+            WebDriverWait(self.driver, 1).until(is_maximized)
         except Exception:
-            time.sleep(1)
-            self.driver.maximize_window()
             time.sleep(0.5)
-            WebDriverWait(self.driver, 2).until(is_maximized)
+            self.driver.maximize_window()
+            time.sleep(0.3)
+            WebDriverWait(self.driver, 1).until(is_maximized)
             size = self.driver.get_window_size()
             if self._developer:
                 print(f"  [DEBUG] Size after set_window_size: {size}")
             if size["width"] < 1000:
                 self.driver.set_window_size(1920, 1080)
-                time.sleep(2)
+                time.sleep(1)
