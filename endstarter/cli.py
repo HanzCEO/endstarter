@@ -17,12 +17,17 @@ from endstarter.runner.job_runner import JobRunner
 @click.argument("job_file", type=click.Path(exists=True, path_type=Path))
 @click.option("--verbose", "-v", is_flag=True, help="Print step-by-step output")
 @click.option("--headed", is_flag=True, default=False, help="Run in headed mode")
+@click.option(
+    "--developer", "-d", is_flag=True, default=False, help="Print debug output"
+)
 @click.version_option(version=__version__)
-def cli(job_file: Path, verbose: bool, headed: bool) -> None:
+def cli(job_file: Path, verbose: bool, headed: bool, developer: bool) -> None:
     """Run an endstarter job from a YAML file."""
     try:
         job = parse_yaml_file(job_file)
-        runner = JobRunner(job, verbose=verbose, headless=not headed)
+        runner = JobRunner(
+            job, verbose=verbose, headless=not headed, developer=developer
+        )
         result = runner.run()
         if verbose:
             print()

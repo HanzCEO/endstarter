@@ -27,12 +27,22 @@ def _is_css_selector(value: str) -> bool:
 class ClickAction(BaseAction):
     """Click an element by CSS selector or text."""
 
+    def __init__(self, driver: Any, developer: bool = False) -> None:
+        """Initialize the action with a WebDriver."""
+        super().__init__(driver)
+        self._developer = developer
+
     def execute(self, selector: str) -> None:
         """Click the element matching the selector or text."""
         if _is_css_selector(selector):
             element = self._wait_for_element(selector)
         else:
             element = self._find_by_text(selector)
+        if self._developer:
+            href = element.get_attribute("href") or ""
+            tag = element.tag_name
+            txt = element.text
+            print(f"  [DEBUG] Click: <{tag}> text='{txt}' href='{href}'")
         element.click()
 
     def _wait_for_element(self, selector: str) -> Any:
@@ -48,16 +58,33 @@ class ClickAction(BaseAction):
         """Find element by text content."""
         exact_xpath = f"//*[normalize-space(.)='{text}']"
         partial_xpath = f"//*[contains(normalize-space(.), '{text}')]"
+        if self._developer:
+            print(f"  [DEBUG] Searching for text: '{text}'")
+            print(f"  [DEBUG] Exact XPath: {exact_xpath}")
+            print(f"  [DEBUG] Partial XPath: {partial_xpath}")
         try:
-            return WebDriverWait(self.driver, 10).until(
+            element = WebDriverWait(self.driver, 10).until(
                 element_to_be_clickable((By.XPATH, exact_xpath))
             )
-        except Exception:
-            pass
+            if self._developer:
+                href = element.get_attribute("href") or ""
+                tag = element.tag_name
+                txt = element.text
+                print(f"  [DEBUG] Found exact: <{tag}> text='{txt}' href='{href}'")
+            return element
+        except Exception as e:
+            if self._developer:
+                print(f"  [DEBUG] Exact match failed: {e}")
         try:
-            return WebDriverWait(self.driver, 10).until(
+            element = WebDriverWait(self.driver, 10).until(
                 element_to_be_clickable((By.XPATH, partial_xpath))
             )
+            if self._developer:
+                href = element.get_attribute("href") or ""
+                tag = element.tag_name
+                txt = element.text
+                print(f"  [DEBUG] Found partial: <{tag}> text='{txt}' href='{href}'")
+            return element
         except Exception as e:
             raise JobError(f"Element not found by text: {text}") from e
 

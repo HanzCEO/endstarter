@@ -43,12 +43,18 @@ class JobRunner:
     """Runs a job and collects results."""
 
     def __init__(
-        self, job: Job, *, verbose: bool = False, headless: bool = True
+        self,
+        job: Job,
+        *,
+        verbose: bool = False,
+        headless: bool = True,
+        developer: bool = False,
     ) -> None:
         """Initialize the job runner."""
         self._job = job
         self._verbose = verbose
         self._headless = headless
+        self._developer = developer
 
     def run(self) -> JobResult:
         """Execute the job and return results."""
@@ -148,7 +154,7 @@ class JobRunner:
     def _handle_click(self, step: Step, driver: Any) -> None:
         """Handle click."""
         if step.click:
-            action = ClickAction(driver)
+            action = ClickAction(driver, developer=self._developer)
             action.execute(step.click)
 
     def _handle_type(self, step: Step, driver: Any) -> None:
