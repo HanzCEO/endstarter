@@ -1,5 +1,6 @@
 """Tests for YAML parser."""
 
+from endstarter.actions.utility import parse_time
 from endstarter.models.job import Step
 from endstarter.parser.yaml_parser import parse_yaml_file
 
@@ -74,3 +75,39 @@ def test_get_action_returns_correct_field():
 
     step3 = Step(use="chrome")
     assert step3.get_action() == "use"
+
+
+def test_parse_time_seconds():
+    """Test parse_time with seconds."""
+    assert parse_time("1s") == 1.0
+    assert parse_time("30s") == 30.0
+
+
+def test_parse_time_minutes():
+    """Test parse_time with minutes."""
+    assert parse_time("1m") == 60.0
+    assert parse_time("30m") == 1800.0
+
+
+def test_parse_time_hours():
+    """Test parse_time with hours."""
+    assert parse_time("1h") == 3600.0
+    assert parse_time("2h") == 7200.0
+
+
+def test_parse_time_milliseconds():
+    """Test parse_time with milliseconds int."""
+    assert parse_time(1000) == 1.0
+    assert parse_time(500) == 0.5
+
+
+def test_parse_time_invalid():
+    """Test parse_time raises on invalid format."""
+    try:
+        parse_time("invalid")
+    except ValueError as e:
+        assert "Invalid time format: invalid" in str(e)
+    try:
+        parse_time("1x")
+    except ValueError as e:
+        assert "Invalid time format: 1x" in str(e)
