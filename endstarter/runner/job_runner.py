@@ -17,6 +17,7 @@ from endstarter.actions.input import (
     KeyPressAction,
     MouseClickAction,
     MouseMoveAction,
+    PickFileAction,
     RightClickAction,
     WindowResizeAction,
 )
@@ -138,6 +139,7 @@ class JobRunner:
             "mouse_move": self._handle_mouse_move,
             "drag_and_drop": self._handle_drag_and_drop,
             "resize": self._handle_resize,
+            "pick_file": self._handle_pick_file,
         }
         handler = handlers.get(action)
         if not handler:
@@ -258,3 +260,9 @@ class JobRunner:
         if step.resize is not None:
             action = WindowResizeAction(driver, developer=self._developer)
             action.execute(step.resize)
+
+    def _handle_pick_file(self, step: Step, driver: Any) -> None:
+        """Handle pick file."""
+        if step.pick_file:
+            action = PickFileAction(driver)
+            action.execute(step.pick_file)
