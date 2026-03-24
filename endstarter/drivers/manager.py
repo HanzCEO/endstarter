@@ -35,7 +35,7 @@ def _create_chrome_driver(headless: bool = True) -> WebDriver:
         options.add_argument("--disable-gpu")
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
-        driver.implicitly_wait(5)
+        driver.implicitly_wait(0)
         WebDriverWait(driver, 10).until(lambda d: d.window_handles)
         return cast(WebDriver, driver)
     except Exception as e:
