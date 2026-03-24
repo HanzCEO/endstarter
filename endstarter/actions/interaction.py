@@ -10,12 +10,25 @@ from endstarter.actions.base import BaseAction
 from endstarter.errors import JobError
 
 
+def _is_css_selector(value: str) -> bool:
+    """Detect if value is a CSS selector vs text content."""
+    css_chars = {"#", ".", "[", "]", ">", "+", "~", "*", " "}
+    return (
+        any(c in value for c in css_chars)
+        or value.startswith(("#", "."))
+        or value.startswith("//")
+    )
+
+
 class ClickAction(BaseAction):
-    """Click an element by CSS selector."""
+    """Click an element by CSS selector or text."""
 
     def execute(self, selector: str) -> None:
-        """Click the element matching the selector."""
-        element = self._wait_for_element(selector)
+        """Click the element matching the selector or text."""
+        if _is_css_selector(selector):
+            element = self._wait_for_element(selector)
+        else:
+            element = self._find_by_text(selector)
         element.click()
 
     def _wait_for_element(self, selector: str) -> Any:
@@ -26,6 +39,16 @@ class ClickAction(BaseAction):
             )
         except Exception as e:
             raise JobError(f"Element not clickable: {selector}") from e
+
+    def _find_by_text(self, text: str) -> Any:
+        """Find element by text content."""
+        xpath = f"//*[text()='{text}' or contains(text(), '{text}')]"
+        try:
+            return WebDriverWait(self.driver, 10).until(
+                element_to_be_clickable((By.XPATH, xpath))
+            )
+        except Exception as e:
+            raise JobError(f"Element not found by text: {text}") from e
 
 
 class TypeAction(BaseAction):
@@ -55,11 +78,19 @@ class SubmitAction(BaseAction):
 
 
 class HoverAction(BaseAction):
-    """Hover over an element."""
+    """Hover over an element by CSS selector or text."""
 
     def execute(self, selector: str) -> None:
         """Hover over the element."""
         from selenium.webdriver.common.action_chains import ActionChains
 
-        element = self.driver.find_element(By.CSS_SELECTOR, selector)
+        if _is_css_selector(selector):
+            element = self.driver.find_element(By.CSS_SELECTOR, selector)
+        else:
+            element = self._find_by_text(selector)
         ActionChains(self.driver).move_to_element(element).perform()
+
+    def _find_by_text(self, text: str) -> Any:
+        """Find element by text content."""
+        xpath = f"//*[text()='{text}' or contains(text(), '{text}')]"
+        return self.driver.find_element(By.XPATH, xpath)
