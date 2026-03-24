@@ -40,6 +40,7 @@ class Step(BaseModel):
     drag_and_drop: Optional[dict[str, str]] = Field(
         default=None, validation_alias="drag-and-drop"
     )
+    resize: Optional[str | list[int]] = None
 
     def get_action(self) -> Optional[str]:
         """Return the action key that is set."""
