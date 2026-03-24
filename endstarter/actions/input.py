@@ -114,3 +114,29 @@ class DragAndDropAction(BaseAction):
         source = self.driver.find_element(By.CSS_SELECTOR, args["source"])
         target = self.driver.find_element(By.CSS_SELECTOR, args["target"])
         ActionChains(self.driver).drag_and_drop(source, target).perform()
+
+
+class WindowResizeAction(BaseAction):
+    """Resize browser window."""
+
+    def execute(self, value: str | list[int]) -> None:
+        """Resize window.
+
+        Args:
+            value: "minimize", "maximize", "fullscreen", or [width, height]
+        """
+        if isinstance(value, str):
+            if value == "minimize":
+                self.driver.minimize_window()
+            elif value == "maximize":
+                self.driver.maximize_window()
+            elif value == "fullscreen":
+                self.driver.fullscreen_window()
+            else:
+                msg = f"Unknown resize value: {value}"
+                raise ValueError(msg)
+        else:
+            if len(value) != 2:
+                msg = "Resize coords must be [width, height]"
+                raise ValueError(msg)
+            self.driver.set_window_size(value[0], value[1])
