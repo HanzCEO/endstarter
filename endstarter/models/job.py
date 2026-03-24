@@ -28,6 +28,18 @@ class Step(BaseModel):
     execute_script: Optional[str] = Field(
         default=None, validation_alias="execute-script"
     )
+    press_key: Optional[str] = Field(default=None, validation_alias="press-key")
+    key_combo: Optional[list[str]] = Field(default=None, validation_alias="key-combo")
+    mouse_click: Optional[list[int]] = Field(
+        default=None, validation_alias="mouse-click"
+    )
+    right_click: Optional[list[int]] = Field(
+        default=None, validation_alias="right-click"
+    )
+    mouse_move: Optional[list[int]] = Field(default=None, validation_alias="mouse-move")
+    drag_and_drop: Optional[dict[str, str]] = Field(
+        default=None, validation_alias="drag-and-drop"
+    )
 
     def get_action(self) -> Optional[str]:
         """Return the action key that is set."""
