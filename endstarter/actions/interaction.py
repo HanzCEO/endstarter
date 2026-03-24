@@ -56,34 +56,34 @@ class ClickAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        exact_xpath = f"//*[normalize-space(.)='{text}']"
-        partial_xpath = f"//*[contains(normalize-space(.), '{text}')]"
+        anchor_partial = f"//a[@href and contains(normalize-space(.), '{text}')]"
+        generic_partial = f"//*[contains(normalize-space(.), '{text}')]"
         if self._developer:
             print(f"  [DEBUG] Searching for text: '{text}'")
-            print(f"  [DEBUG] Exact XPath: {exact_xpath}")
-            print(f"  [DEBUG] Partial XPath: {partial_xpath}")
+            print(f"  [DEBUG] Anchor XPath: {anchor_partial}")
+            print(f"  [DEBUG] Generic XPath: {generic_partial}")
         try:
             element = WebDriverWait(self.driver, 10).until(
-                element_to_be_clickable((By.XPATH, exact_xpath))
+                element_to_be_clickable((By.XPATH, anchor_partial))
             )
             if self._developer:
                 href = element.get_attribute("href") or ""
                 tag = element.tag_name
                 txt = element.text
-                print(f"  [DEBUG] Found exact: <{tag}> text='{txt}' href='{href}'")
+                print(f"  [DEBUG] Found anchor: <{tag}> text='{txt}' href='{href}'")
             return element
         except Exception as e:
             if self._developer:
-                print(f"  [DEBUG] Exact match failed: {e}")
+                print(f"  [DEBUG] Anchor match failed: {e}")
         try:
             element = WebDriverWait(self.driver, 10).until(
-                element_to_be_clickable((By.XPATH, partial_xpath))
+                element_to_be_clickable((By.XPATH, generic_partial))
             )
             if self._developer:
                 href = element.get_attribute("href") or ""
                 tag = element.tag_name
                 txt = element.text
-                print(f"  [DEBUG] Found partial: <{tag}> text='{txt}' href='{href}'")
+                print(f"  [DEBUG] Found generic: <{tag}> text='{txt}' href='{href}'")
             return element
         except Exception as e:
             raise JobError(f"Element not found by text: {text}") from e
@@ -130,10 +130,10 @@ class HoverAction(BaseAction):
 
     def _find_by_text(self, text: str) -> Any:
         """Find element by text content."""
-        exact_xpath = f"//*[normalize-space(.)='{text}']"
-        partial_xpath = f"//*[contains(normalize-space(.), '{text}')]"
+        anchor_partial = f"//a[@href and contains(normalize-space(.), '{text}')]"
+        generic_partial = f"//*[contains(normalize-space(.), '{text}')]"
         try:
-            return self.driver.find_element(By.XPATH, exact_xpath)
+            return self.driver.find_element(By.XPATH, anchor_partial)
         except Exception:
             pass
-        return self.driver.find_element(By.XPATH, partial_xpath)
+        return self.driver.find_element(By.XPATH, generic_partial)
