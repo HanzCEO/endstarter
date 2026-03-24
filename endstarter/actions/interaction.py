@@ -43,7 +43,12 @@ class ClickAction(BaseAction):
             tag = element.tag_name
             txt = element.text
             print(f"  [DEBUG] Click: <{tag}> text='{txt}' href='{href}'")
-        element.click()
+        try:
+            element.click()
+        except Exception:
+            if self._developer:
+                print("  [DEBUG] Standard click failed, trying JS click")
+            self.driver.execute_script("arguments[0].click();", element)
 
     def _wait_for_element(self, selector: str) -> Any:
         """Wait for element to be clickable."""
