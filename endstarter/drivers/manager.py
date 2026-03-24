@@ -8,6 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
 from endstarter.errors import DriverError
@@ -35,6 +36,7 @@ def _create_chrome_driver(headless: bool = True) -> WebDriver:
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
         driver.implicitly_wait(5)
+        WebDriverWait(driver, 10).until(lambda d: d.window_handles)
         return cast(WebDriver, driver)
     except Exception as e:
         raise DriverError(f"Failed to create Chrome driver: {e}") from e
