@@ -60,30 +60,45 @@ class ClickAction(BaseAction):
             raise JobError(f"Element not clickable: {selector}") from e
 
     def _find_by_text(self, text: str) -> Any:
-        """Find element by text content."""
+        """Find element by text content using fast parallel search."""
         if self._developer:
             print(f"  [DEBUG] Searching for text: '{text}'")
         anchor_xpath = f"//a[contains(normalize-space(.), '{text}')]"
         button_xpath = f"//button[contains(normalize-space(.), '{text}')]"
         generic_xpath = f"//*[contains(normalize-space(.), '{text}')]"
-        for xpath in [anchor_xpath, button_xpath, generic_xpath]:
+        xpaths = [anchor_xpath, button_xpath, generic_xpath]
+        for xpath in xpaths:
             if self._developer:
-                print(f"  [DEBUG] Trying XPath: {xpath}")
-            try:
-                from selenium.webdriver.support import expected_conditions as EC
-
-                element = WebDriverWait(self.driver, 5).until(
-                    EC.presence_of_element_located((By.XPATH, xpath))
-                )
+                print(f"  [DEBUG] Trying: {xpath}")
+            elements = self.driver.find_elements(By.XPATH, xpath)
+            if elements:
+                element = elements[0]
                 if self._developer:
                     href = element.get_attribute("href") or ""
                     tag = element.tag_name
                     txt = element.text[:50]
                     print(f"  [DEBUG] Found: <{tag}> text='{txt}...' href='{href}'")
                 return element
-            except Exception as e:
+        if self._developer:
+            print("  [DEBUG] Not found, waiting for page ready")
+        try:
+            WebDriverWait(self.driver, 5).until(
+                lambda d: d.execute_script("return document.readyState") == "complete"
+            )
+        except Exception:
+            pass
+        for xpath in xpaths:
+            elements = self.driver.find_elements(By.XPATH, xpath)
+            if elements:
+                element = elements[0]
                 if self._developer:
-                    print(f"  [DEBUG] Failed: {e}")
+                    href = element.get_attribute("href") or ""
+                    tag = element.tag_name
+                    txt = element.text[:50]
+                    print(
+                        f"  [DEBUG] Found after wait: <{tag}> text='{txt}...' href='{href}'"
+                    )
+                return element
         raise JobError(f"Element not found by text: {text}")
 
 
