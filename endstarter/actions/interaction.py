@@ -53,7 +53,7 @@ class ClickAction(BaseAction):
     def _wait_for_element(self, selector: str) -> Any:
         """Wait for element to be clickable."""
         try:
-            return WebDriverWait(self.driver, 10).until(
+            return WebDriverWait(self.driver, 3).until(
                 element_to_be_clickable((By.CSS_SELECTOR, selector))
             )
         except Exception as e:
@@ -82,7 +82,7 @@ class ClickAction(BaseAction):
         if self._developer:
             print("  [DEBUG] Not found, waiting for page ready")
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 3).until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
         except Exception:
@@ -151,7 +151,7 @@ class HoverAction(BaseAction):
             if elements:
                 return elements[0]
         try:
-            WebDriverWait(self.driver, 5).until(
+            WebDriverWait(self.driver, 3).until(
                 lambda d: d.execute_script("return document.readyState") == "complete"
             )
         except Exception:
