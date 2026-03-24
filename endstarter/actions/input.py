@@ -180,3 +180,23 @@ class WindowResizeAction(BaseAction):
             if size["width"] < 1000:
                 self.driver.set_window_size(1920, 1080)
                 time.sleep(1)
+
+
+class PickFileAction(BaseAction):
+    """Handle native OS file picker using pyautogui."""
+
+    def execute(self, args: list[str | float]) -> None:
+        """Pick file from native OS dialog.
+
+        Args:
+            args: [file_path] or [file_path, delay_seconds]
+        """
+        import time as time_module
+
+        import pyautogui  # type: ignore[import-untyped]
+
+        file_path = str(args[0])
+        delay = float(args[1]) if len(args) > 1 else 0.5
+        time_module.sleep(delay)
+        pyautogui.write(file_path)
+        pyautogui.press("enter")
