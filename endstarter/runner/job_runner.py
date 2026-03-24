@@ -11,6 +11,14 @@ from endstarter.actions.assertion import (
     AssertTitleAction,
     AssertVisibleInPageAction,
 )
+from endstarter.actions.input import (
+    DragAndDropAction,
+    KeyComboAction,
+    KeyPressAction,
+    MouseClickAction,
+    MouseMoveAction,
+    RightClickAction,
+)
 from endstarter.actions.interaction import (
     ClickAction,
     HoverAction,
@@ -99,6 +107,12 @@ class JobRunner:
             "wait": self._handle_wait,
             "screenshot": self._handle_screenshot,
             "execute_script": self._handle_execute_script,
+            "press_key": self._handle_press_key,
+            "key_combo": self._handle_key_combo,
+            "mouse_click": self._handle_mouse_click,
+            "right_click": self._handle_right_click,
+            "mouse_move": self._handle_mouse_move,
+            "drag_and_drop": self._handle_drag_and_drop,
         }
         handler = handlers.get(action)
         if not handler:
@@ -177,3 +191,39 @@ class JobRunner:
         if step.execute_script:
             action = ExecuteScriptAction(driver)
             action.execute(step.execute_script)
+
+    def _handle_press_key(self, step: Step, driver: Any) -> None:
+        """Handle press key."""
+        if step.press_key:
+            action = KeyPressAction(driver)
+            action.execute(step.press_key)
+
+    def _handle_key_combo(self, step: Step, driver: Any) -> None:
+        """Handle key combo."""
+        if step.key_combo:
+            action = KeyComboAction(driver)
+            action.execute(step.key_combo)
+
+    def _handle_mouse_click(self, step: Step, driver: Any) -> None:
+        """Handle mouse click."""
+        if step.mouse_click:
+            action = MouseClickAction(driver)
+            action.execute(step.mouse_click)
+
+    def _handle_right_click(self, step: Step, driver: Any) -> None:
+        """Handle right click."""
+        if step.right_click:
+            action = RightClickAction(driver)
+            action.execute(step.right_click)
+
+    def _handle_mouse_move(self, step: Step, driver: Any) -> None:
+        """Handle mouse move."""
+        if step.mouse_move:
+            action = MouseMoveAction(driver)
+            action.execute(step.mouse_move)
+
+    def _handle_drag_and_drop(self, step: Step, driver: Any) -> None:
+        """Handle drag and drop."""
+        if step.drag_and_drop:
+            action = DragAndDropAction(driver)
+            action.execute(step.drag_and_drop)
