@@ -35,7 +35,7 @@ def test_key_combo_action_unknown_key():
     driver = MagicMock()
     action = KeyComboAction(driver)
     try:
-        action.execute(["ctrl", "UnknownKey"])
+        action.execute(["control", "UnknownKey"])
     except ValueError as e:
         assert "Unknown key: UnknownKey" in str(e)
 

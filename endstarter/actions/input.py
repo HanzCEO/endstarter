@@ -29,17 +29,19 @@ class KeyComboAction(BaseAction):
         """Press a key combination.
 
         Args:
-            keys: List of key names (e.g., ["ctrl", "c"] for Ctrl+C)
+            keys: List of key names (e.g., ["control", "c"] for Ctrl+C)
         """
-        chain = ActionChains(self.driver)
+        key_constants: list[str] = []
         for key in keys:
             key_constant = getattr(Keys, key.upper(), None)
             if key_constant is None:
                 msg = f"Unknown key: {key}"
                 raise ValueError(msg)
+            key_constants.append(key_constant)
+        chain = ActionChains(self.driver)
+        for key_constant in key_constants:
             chain.key_down(key_constant)
-        for key in reversed(keys):
-            key_constant = getattr(Keys, key.upper(), None)
+        for key_constant in reversed(key_constants):
             chain.key_up(key_constant)
         chain.perform()
 
