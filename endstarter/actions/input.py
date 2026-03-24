@@ -42,3 +42,20 @@ class KeyComboAction(BaseAction):
             key_constant = getattr(Keys, key.upper(), None)
             chain.key_up(key_constant)
         chain.perform()
+
+
+class MouseClickAction(BaseAction):
+    """Click at screen coordinates."""
+
+    def execute(self, coords: list[int]) -> None:
+        """Click at coordinates.
+
+        Args:
+            coords: [x, y] screen coordinates
+        """
+        if len(coords) != 2:
+            msg = "Coords must be [x, y]"
+            raise ValueError(msg)
+        x, y = coords
+        ActionChains(self.driver).move_by_offset(x, y).click().perform()
+        ActionChains(self.driver).move_by_offset(-x, -y).perform()
