@@ -76,3 +76,20 @@ class RightClickAction(BaseAction):
         x, y = coords
         ActionChains(self.driver).move_by_offset(x, y).context_click().perform()
         ActionChains(self.driver).move_by_offset(-x, -y).perform()
+
+
+class MouseMoveAction(BaseAction):
+    """Move mouse to screen coordinates."""
+
+    def execute(self, coords: list[int]) -> None:
+        """Move mouse to coordinates.
+
+        Args:
+            coords: [x, y] screen coordinates
+        """
+        if len(coords) != 2:
+            msg = "Coords must be [x, y]"
+            raise ValueError(msg)
+        x, y = coords
+        ActionChains(self.driver).move_by_offset(x, y).perform()
+        ActionChains(self.driver).move_by_offset(-x, -y).perform()
