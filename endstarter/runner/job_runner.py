@@ -29,15 +29,18 @@ from endstarter.models.result import JobResult, StepResult
 class JobRunner:
     """Runs a job and collects results."""
 
-    def __init__(self, job: Job, *, verbose: bool = False) -> None:
+    def __init__(
+        self, job: Job, *, verbose: bool = False, headless: bool = True
+    ) -> None:
         """Initialize the job runner."""
         self._job = job
         self._verbose = verbose
+        self._headless = headless
 
     def run(self) -> JobResult:
         """Execute the job and return results."""
         result = JobResult(name=self._job.name, passed=True)
-        driver = get_driver()
+        driver = get_driver(headless=self._headless)
         for step in self._job.jobs:
             step_result = self._execute_step(step, driver)
             result.add_step(step_result)
