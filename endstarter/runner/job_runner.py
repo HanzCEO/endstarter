@@ -18,6 +18,7 @@ from endstarter.actions.input import (
     MouseClickAction,
     MouseMoveAction,
     RightClickAction,
+    WindowResizeAction,
 )
 from endstarter.actions.interaction import (
     ClickAction,
@@ -113,6 +114,7 @@ class JobRunner:
             "right_click": self._handle_right_click,
             "mouse_move": self._handle_mouse_move,
             "drag_and_drop": self._handle_drag_and_drop,
+            "resize": self._handle_resize,
         }
         handler = handlers.get(action)
         if not handler:
@@ -227,3 +229,9 @@ class JobRunner:
         if step.drag_and_drop:
             action = DragAndDropAction(driver)
             action.execute(step.drag_and_drop)
+
+    def _handle_resize(self, step: Step, driver: Any) -> None:
+        """Handle resize."""
+        if step.resize is not None:
+            action = WindowResizeAction(driver)
+            action.execute(step.resize)
