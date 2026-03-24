@@ -1,6 +1,5 @@
 """Tests for YAML parser."""
 
-
 from endstarter.models.job import Step
 from endstarter.parser.yaml_parser import parse_yaml_file
 
