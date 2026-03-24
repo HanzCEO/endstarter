@@ -125,6 +125,9 @@ class WindowResizeAction(BaseAction):
         Args:
             value: "minimize", "maximize", "fullscreen", or [width, height]
         """
+        from selenium.webdriver.support.ui import WebDriverWait
+
+        WebDriverWait(self.driver, 2).until(lambda d: d.window_handles)
         if isinstance(value, str):
             if value == "minimize":
                 self.driver.minimize_window()
