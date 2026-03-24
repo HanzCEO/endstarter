@@ -1,0 +1,13 @@
+name: Keyboard Mouse Demo
+type: test
+jobs:
+  - use: chrome
+  - navigate: https://example.com/
+  - mouse_click: [100, 200]
+  - press_key: Tab
+  - key_combo: [ctrl, a]
+  - right_click: [50, 50]
+  - mouse_move: [300, 400]
+  - drag_and_drop:
+      source: "#source"
+      target: "#target"
