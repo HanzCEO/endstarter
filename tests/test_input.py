@@ -8,6 +8,7 @@ from endstarter.actions.input import (
     KeyPressAction,
     MouseClickAction,
     MouseMoveAction,
+    PickFileAction,
     RightClickAction,
     WindowResizeAction,
 )
@@ -132,3 +133,10 @@ def test_window_resize_action_invalid_coords():
         action.execute([1280])
     except ValueError as e:
         assert "Resize coords must be [width, height]" in str(e)
+
+
+def test_pick_file_action_instantiable():
+    """Test PickFileAction can be instantiated."""
+    driver = MagicMock()
+    action = PickFileAction(driver)
+    assert action.driver is driver
